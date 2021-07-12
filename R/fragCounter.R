@@ -629,8 +629,15 @@ correctcov_stub = function(cov.wig, mappability = 0.9, samplesize = 5e4, verbose
   if (is.null(cov$score)) { ## if $score field is empty then just assume that the first column of coverage is the "score" i.e. read count
     names(values(cov))[1] = 'score'
   }
-  map = gr.sub(map)
-  gc = gr.sub(gc)
+  
+  # Check for chr prefix in coverage and set gc/map seqnames accordingly
+  is.ucsc = function(cov) any(grepl("^chr", levels(seqnames(cov))))
+
+  if (!is.ucsc(cov)) {
+    map = gr.sub(map)
+    gc  = gr.sub(gc)
+  }
+
   gc.str = gr.string(gc)
   map.str = gr.string(map)
   cov.str = gr.string(cov)
